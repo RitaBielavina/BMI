@@ -1,0 +1,79 @@
+import tkinter
+import tkinter as tk
+from tkinter import messagebox
+import matplotlib.pyplot as plt
+
+def calculate_bmi():
+    try:
+        weight = float(weight_entry.get())
+        height = float(height_entry.get())
+        bmi = weight / (height ** 2)
+        category = bmi_category(bmi)
+        show_bmi(bmi, category)
+        store_data(fname_entry.get(), lname_entry.get(), age_entry.get(), height, weight, bmi, category)
+    except ValueError:
+        messagebox.showerror("Invalid input", "Please enter valid numbers for height and weight.")
+
+def bmi_category(bmi):
+    if bmi < 18.5:
+        return 'Underweight'
+    elif 18.5 <= bmi < 24.9:
+        return 'Normal weight'
+    elif 25 <= bmi < 29.9:
+        return 'Overweight'
+    else:
+        return 'Obesity'
+
+def show_bmi(bmi, category):
+    messagebox.showinfo("BMI Result", f"Your BMI is {bmi:.2f} which is considered {category}.")
+
+def store_data(fname, lname, age, height, weight, bmi, category):
+    with open("bmi_data.txt", "a") as file:
+        file.write(f"{fname} {lname},{age},{height},{weight},{bmi:.2f},{category}\n")
+
+
+# Main
+window=tkinter.Tk()
+window.title('BMI Calculator:')
+
+frame=tkinter.Frame(window)
+frame.pack()
+
+userinfoframe=tkinter.LabelFrame(frame,text='User Information')
+userinfoframe.grid(row=0,column=0)
+
+fnamelabel=tkinter.Label(userinfoframe,text='First Name')
+fnamelabel.grid(row=0,column=0)
+
+fnameentry=tkinter.Entry(userinfoframe)
+fnameentry.grid(row=0,column=1)
+
+lnamelabel=tkinter.Label(userinfoframe,text='Last Name')
+lnamelabel.grid(row=1,column=0)
+
+lnameentry=tkinter.Entry(userinfoframe)
+lnameentry.grid(row=1,column=1)
+
+agelabel=tkinter.Label(userinfoframe,text='Age')
+agelabel.grid(row=2,column=0)
+
+ageentry=tkinter.Entry(userinfoframe)
+ageentry.grid(row=2,column=1)
+
+userinfoframe=tkinter.LabelFrame(frame,text='BMI ')
+userinfoframe.grid(row=3,column=0)
+
+weightlabel=tkinter.Label(userinfoframe,text='Weight')
+weightlabel.grid(row=4,column=0)
+
+weightentry=tkinter.Entry(userinfoframe)
+weightentry.grid(row=4,column=1)
+
+heightlabel=tkinter.Label(userinfoframe,text='Height')
+heightlabel.grid(row=5,column=0)
+
+calc_btn = tkinter.Button(frame, text='Calculate', command=calculate_bmi)
+calc_btn.grid(row=2, column=0, padx=10, pady=10)
+
+window.mainloop()
+
