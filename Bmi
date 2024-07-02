@@ -1,5 +1,5 @@
 import tkinter
-import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
 
@@ -10,7 +10,7 @@ def calculate_bmi():
         bmi = weight / (height ** 2)
         category = bmi_category(bmi)
         show_bmi(bmi, category)
-        store_data(fname_entry.get(), lname_entry.get(), age_entry.get(), height, weight, bmi, category)
+        store_data(fname_entry.get(), lname_entry.get(), ageinbox.get(), height, weight, bmi, category)
     except ValueError:
         messagebox.showerror("Invalid input", "Please enter valid numbers for height and weight.")
 
@@ -32,48 +32,71 @@ def store_data(fname, lname, age, height, weight, bmi, category):
         file.write(f"{fname} {lname},{age},{height},{weight},{bmi:.2f},{category}\n")
 
 
+def plot_pie_chart():
+    categories = {"Underweight": 0, "Normal weight": 0, "Overweight": 0, "Obesity": 0}
+
+    try:
+        with open("bmi_data.txt", "r") as file:
+            for line in file:
+                data = line.strip().split(",")
+                category = data[-1]
+                if category in categories:
+                    categories[category] += 1
+    except FileNotFoundError:
+        messagebox.showerror("Error", " Please, save BMI results first.")
+        return
+
+    labels = categories.keys()
+    sizes = categories.values()
+
+    plt.figure(figsize=(8, 6))
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%')
+    plt.title("BMI Categories Results")
+    plt.axis('equal')
+    plt.show()
+
+
 # Main
-window=tkinter.Tk()
-window.title('BMI Calculator:')
+window = tkinter.Tk()
+window.title('BMI Calculator')
 
-frame=tkinter.Frame(window)
-frame.pack()
+#Frame of the table
+frame = tkinter.Frame(window)
+frame.pack(padx=10, pady=10)
 
-userinfoframe=tkinter.LabelFrame(frame,text='User Information')
-userinfoframe.grid(row=0,column=0)
+#User info
+userinfo_frame = tkinter.LabelFrame(frame, text='User Information')
+userinfo_frame.grid(row=0, column=0, padx=10, pady=10)
 
-fnamelabel=tkinter.Label(userinfoframe,text='First Name')
-fnamelabel.grid(row=0,column=0)
+tkinter.Label(userinfo_frame, text='First Name').grid(row=0, column=0)
+fname_entry = tkinter.Entry(userinfo_frame)
+fname_entry.grid(row=0, column=1)
 
-fnameentry=tkinter.Entry(userinfoframe)
-fnameentry.grid(row=0,column=1)
+tkinter.Label(userinfo_frame, text='Last Name').grid(row=1, column=0)
+lname_entry = tkinter.Entry(userinfo_frame)
+lname_entry.grid(row=1, column=1)
 
-lnamelabel=tkinter.Label(userinfoframe,text='Last Name')
-lnamelabel.grid(row=1,column=0)
+agelabel=tkinter.Label(userinfo_frame,text='Age').grid(row=2, column=0)
+ageinbox=tkinter.Spinbox(userinfo_frame,from_=18,to=90,width=18)
+ageinbox.grid(row=2, column=1)
 
-lnameentry=tkinter.Entry(userinfoframe)
-lnameentry.grid(row=1,column=1)
+#BMI calculation frame
 
-agelabel=tkinter.Label(userinfoframe,text='Age')
-agelabel.grid(row=2,column=0)
+bmi_frame = tkinter.LabelFrame(frame, text='BMI Information')
+bmi_frame.grid(row=1, column=0, padx=10, pady=10)
 
-ageentry=tkinter.Entry(userinfoframe)
-ageentry.grid(row=2,column=1)
+tkinter.Label(bmi_frame, text='Weight (kg)').grid(row=0, column=0)
+weight_entry = tkinter.Entry(bmi_frame)
+weight_entry.grid(row=0, column=1)
 
-userinfoframe=tkinter.LabelFrame(frame,text='BMI ')
-userinfoframe.grid(row=3,column=0)
-
-weightlabel=tkinter.Label(userinfoframe,text='Weight')
-weightlabel.grid(row=4,column=0)
-
-weightentry=tkinter.Entry(userinfoframe)
-weightentry.grid(row=4,column=1)
-
-heightlabel=tkinter.Label(userinfoframe,text='Height')
-heightlabel.grid(row=5,column=0)
+tkinter.Label(bmi_frame, text='Height (m)').grid(row=1, column=0)
+height_entry = tkinter.Entry(bmi_frame)
+height_entry.grid(row=1, column=1)
 
 calc_btn = tkinter.Button(frame, text='Calculate', command=calculate_bmi)
 calc_btn.grid(row=2, column=0, padx=10, pady=10)
 
-window.mainloop()
+pie_chart_btn = tkinter.Button(frame, text='Show Graph', command=plot_pie_chart)
+pie_chart_btn.grid(row=3, column=0, padx=10, pady=10)
 
+window.mainloop()
